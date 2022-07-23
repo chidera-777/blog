@@ -1,0 +1,49 @@
+{% extends 'blog/base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+  {% for msg in messages %}
+    <div class="alert alert-success alert-dismissible fade show">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+       <strong>{{ msg }}</strong>
+     </div>
+  {% endfor %}
+<h1>{{post.title}}</h1>
+  <p class="date">
+    Published {{ post.publish }}
+  </p>
+  {{ post.body|linebreaks }}
+  <p>
+    <a class="link" href="{% url "blog:post_share" post.id %}">Share <i class="fa-solid fa-share"></i>
+    </a>
+  </p>
+  {% with comments.count as total_comments %}
+  <h3>
+    {{ total_comments }} comment{{ total_comments|pluralize }} on <span class="title"> "{{ post.title }}"</span>
+  </h3>
+  {% endwith %}
+  {% for comment in comments %}
+  <div class="comment">
+    <p class="info">
+      {{ comment.name }}
+     <p class="info_">
+      {{ comment.created }}
+     </p>
+    </p>
+    <hr/>
+    {{comment.body|linebreaks}}
+  </div>
+  {% empty %}
+  <p>There are no comments yet</p>
+  {% endfor %}
+  {% if new_comment %}
+    <h2>Your Comment has been added</h>
+  {% else %}
+    <h2>Leave a Reply</h2>
+    <p class="ema">Your email address will not be published</>
+    <form method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <p><input type="submit" value="Post Comment"></p>
+    </form>
+  {% endif %}
+  {% endblock %}
